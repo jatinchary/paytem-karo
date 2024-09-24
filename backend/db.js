@@ -14,6 +14,7 @@ const connectDB = async () => {
       process.exit(1);
     }
   };
+  
   connectDB();
 
 // Create a Schema for Users
