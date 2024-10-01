@@ -1,4 +1,4 @@
-import { useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import axios from "axios";
 import { useState } from 'react';
 
@@ -7,6 +7,26 @@ export const SendMoney = () => {
     const id = searchParams.get("id");
     const name = searchParams.get("name");
     const [amount, setAmount] = useState(0);
+
+    const navigate = useNavigate();
+
+    const handleTransfer = async () => {
+        try {
+            await axios.post("http://localhost:3000/api/v1/account/transfer", {
+                to: id,
+                amount
+            }, {
+                headers: {
+                    Authorization: "Bearer " + localStorage.getItem("token")
+                }
+            });
+            // If the transaction is successful, redirect to the dashboard
+            navigate("/dashboard");
+        } catch (error) {
+            console.error("Error during transfer:", error);
+            // Handle the error appropriately (e.g., show an error message to the user)
+        }
+    };
 
     return <div className="flex justify-center items-center h-screen bg-gray-100">
         <div className="flex flex-col justify-center items-center h-full">
@@ -36,16 +56,7 @@ export const SendMoney = () => {
                                 placeholder="Enter amount"
                             />
                         </div>
-                        <button onClick={() => {
-                            axios.post("http://localhost:3000/api/v1/account/transfer", {
-                                to: id,
-                                amount
-                            }, {
-                                headers: {
-                                    Authorization: "Bearer " + localStorage.getItem("token")
-                                }
-                            })
-                        }} className="flex justify-center rounded-md text-sm font-medium ring-offset-2 transition-colors h-10 px-4 py-2 w-full bg-green-500 text-white">
+                        <button onClick={ handleTransfer} className="flex justify-center rounded-md text-sm font-medium ring-offset-2 transition-colors h-10 px-4 py-2 w-full bg-green-500 text-white">
                             Initiate Transfer
                         </button>
                     </div>
